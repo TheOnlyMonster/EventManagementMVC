@@ -1,6 +1,8 @@
-﻿namespace EventManagementWebApp.Models
+﻿using EventManagementWebApp.Data.Contracts;
+
+namespace EventManagementWebApp.Models
 {
-    public class Event
+    public class Event : ISoftDelete
     {
         public int Id { get; set; }
 
@@ -14,10 +16,12 @@
 
         public int OrganizerId { get; set; }
 
-        public virtual ApplicationUser User { get; set; }
+        public virtual User Organizer { get; set; }
 
         public virtual ICollection<Registration> Registrations { get; set; }
 
         public virtual ICollection<Review> Reviews { get; set; }
+
+        public bool IsDeleted { get; set; }
     }
 }
