@@ -1,6 +1,8 @@
 ﻿using EventManagementWebApp.Models;
 using EventManagementWebApp.ViewModels;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 namespace EventManagementWebApp.Services
 {
@@ -44,20 +46,28 @@ namespace EventManagementWebApp.Services
         public async Task<SignInResult> LoginUserAsync(LoginViewModel model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user == null)
+            if (user != null)
             {
-                return SignInResult.Failed;
-            }
+                var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, false);
 
-            var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, false);
+                if (result.Succeeded)
+                {
+                    var existingClaim = (await _userManager.GetClaimsAsync(user))
+                        .FirstOrDefault(c => c.Type == "OrganizerId");
 
-            if (result.Succeeded)
-            {
-                return result;
+                    if (existingClaim == null)
+                    {
+                        await _userManager.AddClaimAsync(user, new Claim("OrganizerId", user.Id.ToString()));
+                    }
+
+                    return result;
+                }
             }
 
             return SignInResult.Failed;
         }
+
+
 
         public async Task LogoutAsync()
         {

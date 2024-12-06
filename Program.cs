@@ -11,7 +11,7 @@ namespace EventManagementWebApp
 {
     public class Program
     {
-        public static async Task Main(string[] args) 
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -28,8 +28,8 @@ namespace EventManagementWebApp
                 options.Password.RequiredLength = 8;
                 options.User.RequireUniqueEmail = true;
             })
-             .AddEntityFrameworkStores<AppDbContext>()
-             .AddDefaultTokenProviders();
+            .AddEntityFrameworkStores<AppDbContext>()
+            .AddDefaultTokenProviders();
 
             builder.Services.AddScoped<IEventService, EventService>()
                 .AddScoped<IEventRepository, EventRepository>()
@@ -45,12 +45,12 @@ namespace EventManagementWebApp
                 options.LoginPath = "/Account/Login";
             });
 
+            builder.Services.AddHttpContextAccessor();
+
             var app = builder.Build();
 
             await SeedRoles(app.Services);
-
             await SeedUsers(app.Services);
-
 
             if (!app.Environment.IsDevelopment())
             {

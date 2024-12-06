@@ -12,6 +12,12 @@ namespace EventManagementWebApp.Repositories
             _context = context;
         }
 
+        public Task CreateEventAsync(Event newEvent)
+        {
+            _context.Events.Add(newEvent);
+            return _context.SaveChangesAsync();
+        }
+
         public IEnumerable<Event> GetAllEvents()
         {
             return _context.Events.Where(e => !e.IsDeleted).ToList();
