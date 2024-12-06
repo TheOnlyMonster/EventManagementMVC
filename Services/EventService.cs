@@ -15,9 +15,9 @@ namespace EventManagementWebApp.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public IEnumerable<Event> GetEventsForDisplay()
+        public IEnumerable<Event> GetEventsForDisplay(string name, string location, DateTime? date)
         {
-            var events = _eventRepository.GetAllEvents();
+            var events = _eventRepository.GetAllEvents(name, location, date);
             return events;
         }
 
@@ -42,5 +42,28 @@ namespace EventManagementWebApp.Services
             await _eventRepository.CreateEventAsync(newEvent);
         }
 
+        public async Task DeleteEventAsync(int eventId)
+        {
+            var userId = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+                throw new UnauthorizedAccessException("User is not logged in.");
+
+            var organizerId = int.Parse(userId);
+
+            var eventToDelete = _eventRepository.GetEventById(eventId);
+
+            if (eventToDelete == null)
+                throw new ArgumentException("Event not found.");
+
+            if (eventToDelete.OrganizerId != organizerId)
+                throw new UnauthorizedAccessException("User is not the organizer of the event.");
+
+            var result = await _eventRepository.DeleteEventAsync(eventId);
+
+            if (result == 0)
+                throw new InvalidOperationException("Failed to delete event.");
+
+        }
     }
 }

@@ -15,9 +15,10 @@ namespace EventManagementWebApp.Controllers
             _eventService = eventService;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string name, string location, DateTime? date)
         {
-            IEnumerable<Event> events = _eventService.GetEventsForDisplay();
+            IEnumerable<Event> events = _eventService.GetEventsForDisplay(name, location, date);
+
             return View(events);
         }
 
@@ -40,5 +41,17 @@ namespace EventManagementWebApp.Controllers
             }
             return View(model);
         }
+        
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Organizer]
+        public async Task<IActionResult> Delete(int id)
+        {
+            await _eventService.DeleteEventAsync(id);
+            return RedirectToAction("Index", "Event");
+        }
+
+
     }
 }

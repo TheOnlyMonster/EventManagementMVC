@@ -5,8 +5,10 @@ namespace EventManagementWebApp.Repositories
 {
     public interface IEventRepository
     {
-        IEnumerable<Event> GetAllEvents();
+        IEnumerable<Event> GetAllEvents(string name, string location, DateTime? date);
 
-        Task CreateEventAsync(Event newEvent); 
+        Task<int> CreateEventAsync(Event newEvent);
+        Event GetEventById(int eventId);
+        Task<int> DeleteEventAsync(int eventId);
     }
 }

@@ -6,8 +6,9 @@ namespace EventManagementWebApp.Services
 {
     public interface IEventService
     {
-        IEnumerable<Event> GetEventsForDisplay();
+        IEnumerable<Event> GetEventsForDisplay(string name, string location, DateTime? date);
 
         Task CreateEventAsync(EventViewModel model);
+        Task DeleteEventAsync(int eventId);
     }
 }
