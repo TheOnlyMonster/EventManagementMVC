@@ -131,7 +131,7 @@ namespace EventManagementWebApp
                 }
             }
 
-            var organizerEmail = "organizer@example.com";
+            var organizerEmail = "organizer2@example.com";
             var organizerUser = new User
             {
                 UserName = organizerEmail,
