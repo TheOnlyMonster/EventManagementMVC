@@ -57,5 +57,10 @@ namespace EventManagementWebApp.Repositories
         {
             return _context.Events.FirstOrDefault(e => e.Id == eventId);
         }
+
+        public IEnumerable<Event> GetEvents(int numberOfEvents)
+        {
+            return _context.Events.Where(e => !e.IsDeleted).Take(numberOfEvents).ToList();
+        }
     }
 }

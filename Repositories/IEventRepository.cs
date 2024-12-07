@@ -10,5 +10,7 @@ namespace EventManagementWebApp.Repositories
         Task<int> CreateEventAsync(Event newEvent);
         Event GetEventById(int eventId);
         Task<int> DeleteEventAsync(int eventId);
+
+        IEnumerable<Event> GetEvents(int numberOfEvents);
     }
 }

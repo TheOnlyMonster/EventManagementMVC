@@ -8,6 +8,8 @@ namespace EventManagementWebApp.Services
     {
         IEnumerable<Event> GetEventsForDisplay(string name, string location, DateTime? date);
 
+        IEnumerable<Event> GetEvents(int numberOfEvents);
+
         Task CreateEventAsync(EventViewModel model);
         Task DeleteEventAsync(int eventId);
     }

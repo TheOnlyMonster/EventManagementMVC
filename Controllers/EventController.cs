@@ -17,10 +17,19 @@ namespace EventManagementWebApp.Controllers
 
         public IActionResult Index(string name, string location, DateTime? date)
         {
-            IEnumerable<Event> events = _eventService.GetEventsForDisplay(name, location, date);
+            IEnumerable<Event> sliderEvents = _eventService.GetEvents(5);
 
-            return View(events);
+            IEnumerable<Event> eventsTable = _eventService.GetEventsForDisplay(name, location, date);
+
+            var viewModel = new IndexViewModel
+            {
+                SliderEvents = sliderEvents,
+                EventsTable = eventsTable
+            };
+
+            return View(viewModel);
         }
+
 
         [HttpGet]
         [Organizer]

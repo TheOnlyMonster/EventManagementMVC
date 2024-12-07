@@ -65,5 +65,10 @@ namespace EventManagementWebApp.Services
                 throw new InvalidOperationException("Failed to delete event.");
 
         }
+
+        public IEnumerable<Event> GetEvents(int numberOfEvents)
+        {
+            return _eventRepository.GetEvents(numberOfEvents);
+        }
     }
 }
