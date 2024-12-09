@@ -1,66 +1,152 @@
 ﻿using EventManagementWebApp.Attributes;
-using EventManagementWebApp.Models;
+using EventManagementWebApp.CustomExceptions;
 using EventManagementWebApp.Services;
 using EventManagementWebApp.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace EventManagementWebApp.Controllers
 {
     public class EventController : Controller
     {
         private readonly IEventService _eventService;
+        private readonly ILogger<EventController> _logger;
 
-        public EventController(IEventService eventService)
+        public EventController(IEventService eventService, ILogger<EventController> logger)
         {
             _eventService = eventService;
+            _logger = logger;
         }
 
         public IActionResult Index(string name, string location, DateTime? date)
         {
-            IEnumerable<Event> sliderEvents = _eventService.GetEvents(5);
-
-            IEnumerable<Event> eventsTable = _eventService.GetEventsForDisplay(name, location, date);
-
-            var viewModel = new IndexViewModel
+            try
             {
-                SliderEvents = sliderEvents,
-                EventsTable = eventsTable
-            };
+                var viewModel = new IndexViewModel
+                {
+                    SliderEvents = _eventService.GetEvents(5),
+                    EventsTable = _eventService.GetEventsForDisplay(name, location, date)
+                };
 
-            return View(viewModel);
+                return View(viewModel);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while loading the events list.");
+                return RedirectToAction("HandleErrorCode", "Error", new { statusCode = 500 });
+            }
         }
-
 
         [HttpGet]
         [Organizer]
-        public IActionResult Create()
-        {
-            return View();
-        }
+        public IActionResult Create() => View();
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Organizer]
         public async Task<IActionResult> Create(EventViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+                return View(model);
+
+            try
             {
-                await _eventService.CreateEventAsync(model); 
-                return RedirectToAction("Index", "Event");
+                await _eventService.CreateEventAsync(model);
+                return RedirectToAction(nameof(Index));
             }
-            return View(model);
+            catch (UnauthorizedAccessException ex)
+            {
+                _logger.LogWarning(ex, "Unauthorized access during event creation.");
+                return RedirectToAction("HandleErrorCode", "Error", new { statusCode = 401 });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while creating the event.");
+                ModelState.AddModelError(string.Empty, "Failed to create the event.");
+                return View(model);
+            }
         }
-        
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Organizer]
         public async Task<IActionResult> Delete(int id)
         {
-            await _eventService.DeleteEventAsync(id);
-            return RedirectToAction("Index", "Event");
+            try
+            {
+                await _eventService.DeleteEventAsync(id);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (ArgumentException ex)
+            {
+                _logger.LogWarning(ex, "Event not found with ID {EventId}", id);
+                return RedirectToAction("HandleErrorCode", "Error", new { statusCode = 404 });
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                _logger.LogWarning(ex, "Unauthorized access during event deletion.");
+                return RedirectToAction("HandleErrorCode", "Error", new { statusCode = 401 });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while deleting the event.");
+                return RedirectToAction("HandleErrorCode", "Error", new { statusCode = 500 });
+            }
+        }
+
+        [HttpGet]
+        public IActionResult Details(int id)
+        {
+            try
+            {
+                var eventDetails = _eventService.GetEventById(id);
+
+                
+                var isBooked = _eventService.IsEventBookedByUser(id);
+
+                var viewModel = new EventDetailsViewModel
+                {
+                    Event = eventDetails,
+                    IsBooked = isBooked
+                };
+
+                return View(viewModel);
+            }
+            catch (NotFoundException ex)
+            {
+                _logger.LogWarning(ex, "Event not found: {EventId}", id);
+                return RedirectToAction("HandleErrorCode", "Error", new { statusCode = 404 });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An unexpected error occurred while retrieving the event details.");
+                return RedirectToAction("HandleErrorCode", "Error", new { statusCode = 500 });
+            }
         }
 
 
+        [HttpPost]
+        [MemberAttribute]
+        public async Task<IActionResult> Register(int eventId, int tickets)
+        {
+            try
+            {
+                await _eventService.RegisterForEventAsync(eventId, tickets);
+                TempData["SuccessMessage"] = "You have successfully booked the event.";
+            }
+            catch (InvalidOperationException ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "An error occurred while booking the event. Please try again later.";
+            }
+
+            return RedirectToAction("Details", new { id = eventId });
+        }
+
     }
+
 }

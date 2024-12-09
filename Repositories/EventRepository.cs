@@ -18,6 +18,7 @@ namespace EventManagementWebApp.Repositories
             return _context.SaveChangesAsync();
         }
 
+
         public Task<int> DeleteEventAsync(int eventId)
         {
             var eventToDelete = _context.Events.FirstOrDefault(e => e.Id == eventId);
@@ -62,5 +63,7 @@ namespace EventManagementWebApp.Repositories
         {
             return _context.Events.Where(e => !e.IsDeleted).Take(numberOfEvents).ToList();
         }
+
+        
     }
 }

@@ -33,7 +33,8 @@ namespace EventManagementWebApp
 
             builder.Services.AddScoped<IEventService, EventService>()
                 .AddScoped<IEventRepository, EventRepository>()
-                .AddScoped<IAccountService, AccountService>();
+                .AddScoped<IAccountService, AccountService>()
+                .AddScoped<IRegistirationRepository, RegistirationRepository>();
 
             builder.Services.AddAuthentication(options =>
             {
@@ -54,15 +55,16 @@ namespace EventManagementWebApp
 
             if (!app.Environment.IsDevelopment())
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
+
+            app.UseMiddleware<ExceptionMiddleware>();
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
-
             app.UseAuthorization();
 
             app.MapControllerRoute(
@@ -71,6 +73,7 @@ namespace EventManagementWebApp
 
             app.Run();
         }
+
 
         private static async Task SeedRoles(IServiceProvider serviceProvider)
         {
@@ -131,7 +134,7 @@ namespace EventManagementWebApp
                 }
             }
 
-            var organizerEmail = "organizer2@example.com";
+            var organizerEmail = "organizer@example.com";
             var organizerUser = new User
             {
                 UserName = organizerEmail,

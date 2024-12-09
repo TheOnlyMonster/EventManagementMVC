@@ -1,0 +1,150 @@
+﻿@model EventManagementWebApp.ViewModels.EventDetailsViewModel
+
+@{
+    ViewData["Title"] = "Event Details";
+}
+
+<div class="details-container">
+    <!-- Background Image -->
+    <div class="background-image"></div>
+
+    <!-- Diagonal Overlay -->
+    <div class="diagonal-overlay">
+        <div class="details-content">
+            <h2 class="event-title">@Model.Event.Name</h2>
+            <p><strong>Date:</strong> <span>@Model.Event.Date.ToString("yyyy-MM-dd")</span></p>
+            <p><strong>Location:</strong> <span>@Model.Event.Location</span></p>
+            <p><strong>Description:</strong></p>
+            <p>@Model.Event.Description</p>
+            @if (User.Identity.IsAuthenticated && User.IsInRole("Member"))
+			{
+                @if (Model.IsBooked)
+                {
+                    <p><strong>Status:</strong> This event is already booked.</p>
+                }
+                else
+                {
+                    <form method="post" action="@Url.Action("Register", "Event")">
+                        <input type="hidden" name="eventId" value="@Model.Event.Id" />
+                        <div class="form-group">
+                            <label for="tickets">Number of Tickets:</label>
+                            <input type="number" name="tickets" min="1" required />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Book Event</button>
+                    </form>
+                }
+			}
+
+
+            <a href="@Url.Action("Index", "Event")" class="btn btn-secondary btn-lg mt-4">Back to Events</a>
+        </div>
+    </div>
+</div>
+
+
+<style>
+    /* Full-page container */
+    .details-container {
+        position: relative;
+        width: 100%;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    /* Background image with filter */
+    .background-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url('https://www.eventbookings.com/wp-content/uploads/2024/01/Different-Types-of-Events-in-2024-Which-is-Right-for-You.jpg') center/cover no-repeat;
+        z-index: 0;
+        filter: brightness(50%) contrast(120%);
+    }
+
+    /* Diagonal overlay */
+    .diagonal-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        clip-path: polygon(0 0, 60% 0, 0 100%);
+        background-color: rgba(128, 128, 128, 0.85);
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        padding-left: 8%;
+    }
+
+    /* Event details content */
+    .details-content {
+        max-width: 600px;
+        text-align: left;
+        color: white;
+        z-index: 2;
+        font-family: 'Roboto', Arial, sans-serif;
+    }
+
+        .details-content h2 {
+            font-size: 3.5rem;
+            margin-bottom: 2rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .details-content p {
+            font-size: 1.5rem;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .details-content strong {
+            font-weight: bold;
+        }
+
+    /* Button Styling */
+    .btn-secondary {
+        background: linear-gradient(90deg, #6a11cb, #2575fc);
+        color: white;
+        border: none;
+        border-radius: 30px;
+        padding: 15px 30px;
+        font-size: 1.2rem;
+        text-transform: uppercase;
+        transition: all 0.3s ease-in-out;
+    }
+
+        .btn-secondary:hover {
+            background: linear-gradient(90deg, #2575fc, #6a11cb);
+        }
+
+    .btn-primary {
+        background: linear-gradient(90deg, #00c6ff, #0072ff);
+        color: white;
+        border: none;
+        border-radius: 30px;
+        padding: 12px 25px;
+        font-size: 1.2rem;
+        text-transform: uppercase;
+        transition: all 0.3s ease-in-out;
+    }
+
+        .btn-primary:hover {
+            background: linear-gradient(90deg, #0072ff, #00c6ff);
+        }
+
+    /* Form Styling */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-control {
+        padding: 10px;
+        font-size: 1.1rem;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+</style>
