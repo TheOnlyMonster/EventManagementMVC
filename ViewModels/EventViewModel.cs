@@ -4,7 +4,7 @@ namespace EventManagementWebApp.ViewModels
 {
     public class EventViewModel
     {
-        public int Id { get; set; } 
+        public int Id { get; set; }
 
         [Required]
         [StringLength(200, ErrorMessage = "The Name must be at most 200 characters.")]
@@ -21,6 +21,12 @@ namespace EventManagementWebApp.ViewModels
         [StringLength(300, ErrorMessage = "The Location must be at most 300 characters.")]
         public string Location { get; set; }
 
-        public int OrganizerId { get; set; } 
+        public int OrganizerId { get; set; }
+
+        [Required]
+        public IFormFile Image { get; set; }
+
+        
     }
+
 }

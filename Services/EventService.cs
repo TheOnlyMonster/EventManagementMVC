@@ -14,13 +14,17 @@ namespace EventManagementWebApp.Services
         private readonly IRegistirationRepository _registrationRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger<EventService> _logger;
+        private readonly IFileStorageService _fileStorageService;
 
-        public EventService(IEventRepository eventRepository, IHttpContextAccessor httpContextAccessor, ILogger<EventService> logger, IRegistirationRepository _registrationRepository)
+        public EventService(IEventRepository eventRepository, IHttpContextAccessor httpContextAccessor, 
+            ILogger<EventService> logger, IRegistirationRepository _registrationRepository
+            ,IFileStorageService fileStorageService)
         {
             this._registrationRepository = _registrationRepository;
             _eventRepository = eventRepository;
             _httpContextAccessor = httpContextAccessor;
             _logger = logger;
+            _fileStorageService = fileStorageService;
         }
 
         public IEnumerable<Event> GetEventsForDisplay(string name, string location, DateTime? date)
@@ -41,13 +45,21 @@ namespace EventManagementWebApp.Services
             try
             {
                 var userId = GetLoggedInUserId();
+
+                string imagePath = null;
+                if (model.Image != null && model.Image.Length > 0)
+                {
+                    imagePath = await _fileStorageService.UploadFileAsync(model.Image, "uploads/events");
+                }
+
                 var newEvent = new Event
                 {
                     Name = model.Name,
                     Description = model.Description,
                     Date = model.Date,
                     Location = model.Location,
-                    OrganizerId = userId
+                    OrganizerId = userId,
+                    ImagePath = imagePath 
                 };
 
                 await _eventRepository.CreateEventAsync(newEvent);

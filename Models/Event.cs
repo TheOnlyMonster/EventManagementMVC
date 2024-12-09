@@ -20,8 +20,9 @@ namespace EventManagementWebApp.Models
 
         public virtual ICollection<Registration> Registrations { get; set; }
 
-        public virtual ICollection<Review> Reviews { get; set; }
-
         public bool IsDeleted { get; set; }
+
+        public string ImagePath { get; set; } 
     }
+
 }

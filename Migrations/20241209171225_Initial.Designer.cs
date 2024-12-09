@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EventManagementWebApp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241129114507_Initial")]
+    [Migration("20241209171225_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -39,6 +39,10 @@ namespace EventManagementWebApp.Migrations
                     b.Property<string>("Description")
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("ImagePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -90,39 +94,6 @@ namespace EventManagementWebApp.Migrations
                     b.HasIndex("MemberId");
 
                     b.ToTable("Registrations");
-                });
-
-            modelBuilder.Entity("EventManagementWebApp.Models.Review", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Comment")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<int>("EventId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("MemberId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Rating")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EventId");
-
-                    b.HasIndex("MemberId");
-
-                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("EventManagementWebApp.Models.User", b =>
@@ -396,25 +367,6 @@ namespace EventManagementWebApp.Migrations
                     b.Navigation("Member");
                 });
 
-            modelBuilder.Entity("EventManagementWebApp.Models.Review", b =>
-                {
-                    b.HasOne("EventManagementWebApp.Models.Event", "Event")
-                        .WithMany("Reviews")
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("EventManagementWebApp.Models.User", "Member")
-                        .WithMany("Reviews")
-                        .HasForeignKey("MemberId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Event");
-
-                    b.Navigation("Member");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<int>", null)
@@ -469,8 +421,6 @@ namespace EventManagementWebApp.Migrations
             modelBuilder.Entity("EventManagementWebApp.Models.Event", b =>
                 {
                     b.Navigation("Registrations");
-
-                    b.Navigation("Reviews");
                 });
 
             modelBuilder.Entity("EventManagementWebApp.Models.User", b =>
@@ -478,8 +428,6 @@ namespace EventManagementWebApp.Migrations
                     b.Navigation("CreatedEvents");
 
                     b.Navigation("Registrations");
-
-                    b.Navigation("Reviews");
                 });
 #pragma warning restore 612, 618
         }

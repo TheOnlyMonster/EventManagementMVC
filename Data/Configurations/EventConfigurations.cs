@@ -15,10 +15,6 @@ namespace EventManagementWebApp.Data.Configurations
                    .HasForeignKey(x => x.OrganizerId)
                    .OnDelete(DeleteBehavior.Restrict); 
 
-            builder.HasMany(x => x.Reviews)
-                   .WithOne(r => r.Event)
-                   .HasForeignKey(r => r.EventId)
-                   .OnDelete(DeleteBehavior.Restrict); 
 
             builder.HasMany(x => x.Registrations)
                    .WithOne(r => r.Event)

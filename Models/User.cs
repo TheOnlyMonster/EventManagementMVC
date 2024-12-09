@@ -11,7 +11,6 @@ namespace EventManagementWebApp.Models
         public bool IsDeleted { get; set; }
 
         public ICollection<Registration> Registrations { get; set; }
-        public ICollection<Review> Reviews { get; set; }
         public ICollection<Event> CreatedEvents { get; set; }
     }
 }

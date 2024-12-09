@@ -34,7 +34,8 @@ namespace EventManagementWebApp
             builder.Services.AddScoped<IEventService, EventService>()
                 .AddScoped<IEventRepository, EventRepository>()
                 .AddScoped<IAccountService, AccountService>()
-                .AddScoped<IRegistirationRepository, RegistirationRepository>();
+                .AddScoped<IRegistirationRepository, RegistirationRepository>()
+                .AddScoped<IFileStorageService, FileStorageService>();
 
             builder.Services.AddAuthentication(options =>
             {
@@ -47,6 +48,8 @@ namespace EventManagementWebApp
             });
 
             builder.Services.AddHttpContextAccessor();
+
+
 
             var app = builder.Build();
 
@@ -61,6 +64,7 @@ namespace EventManagementWebApp
 
             app.UseMiddleware<ExceptionMiddleware>();
 
+            app.UseStaticFiles();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
@@ -70,6 +74,9 @@ namespace EventManagementWebApp
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Event}/{action=Index}/{id?}");
+
+            
+
 
             app.Run();
         }

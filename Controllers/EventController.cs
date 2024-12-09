@@ -102,13 +102,15 @@ namespace EventManagementWebApp.Controllers
             {
                 var eventDetails = _eventService.GetEventById(id);
 
-                
+                var imageUrl = eventDetails.ImagePath.Replace("\\", "/");
+
                 var isBooked = _eventService.IsEventBookedByUser(id);
 
                 var viewModel = new EventDetailsViewModel
                 {
                     Event = eventDetails,
-                    IsBooked = isBooked
+                    IsBooked = isBooked,
+                    ImageUrl = imageUrl 
                 };
 
                 return View(viewModel);
@@ -124,6 +126,8 @@ namespace EventManagementWebApp.Controllers
                 return RedirectToAction("HandleErrorCode", "Error", new { statusCode = 500 });
             }
         }
+
+
 
 
         [HttpPost]

@@ -6,6 +6,8 @@ namespace EventManagementWebApp.ViewModels
     {
         public Event Event { get; set; }
         public bool IsBooked { get; set; }
+
+        public string ImageUrl { get; set; }
     }
 
 }
