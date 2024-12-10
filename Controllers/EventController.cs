@@ -19,14 +19,23 @@ namespace EventManagementWebApp.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index(string name, string location, DateTime? date)
+        [HttpGet]
+        public IActionResult Index(string name, string location, DateTime? date, int pageNumber = 1, int pageSize = 5)
         {
             try
             {
+                var pagedEvents = _eventService.GetEventsForDisplay(name, location, date, pageNumber, pageSize);
+                
+
+                var totalEvents = _eventService.GetTotalEvents();
+
                 var viewModel = new IndexViewModel
                 {
                     SliderEvents = _eventService.GetEvents(5),
-                    EventsTable = _eventService.GetEventsForDisplay(name, location, date)
+                    EventsTable = pagedEvents,
+                    TotalEvents = totalEvents,
+                    CurrentPage = pageNumber,
+                    PageSize = pageSize
                 };
 
                 return View(viewModel);
@@ -37,6 +46,7 @@ namespace EventManagementWebApp.Controllers
                 return RedirectToAction("HandleErrorCode", "Error", new { statusCode = 500 });
             }
         }
+
 
         [HttpGet]
         [Organizer]

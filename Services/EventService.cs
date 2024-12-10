@@ -27,19 +27,6 @@ namespace EventManagementWebApp.Services
             _fileStorageService = fileStorageService;
         }
 
-        public IEnumerable<Event> GetEventsForDisplay(string name, string location, DateTime? date)
-        {
-            try
-            {
-                return _eventRepository.GetAllEvents(name, location, date);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error fetching events for display.");
-                throw new ServiceException("Failed to fetch events for display.", ex);
-            }
-        }
-
         public async Task CreateEventAsync(EventViewModel model)
         {
             try
@@ -180,6 +167,31 @@ namespace EventManagementWebApp.Services
             }
         }
 
+        public IEnumerable<Event> GetEventsForDisplay(string name, string location, DateTime? date, int pageNumber, int pageSize)
+        {
+            try
+            {
+                return _eventRepository.GetAllEvents(name, location, date, pageNumber, pageSize);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching events for display.");
+                throw new ServiceException("Failed to fetch events for display.", ex);
+            }
+        }
+
+        public int GetTotalEvents()
+        {
+            try
+            {
+                return _eventRepository.GetTotalEvents();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching total events.");
+                throw new ServiceException("Failed to fetch total events.", ex);
+            }
+        }
     }
 
 }

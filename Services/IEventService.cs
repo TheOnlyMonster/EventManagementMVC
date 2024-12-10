@@ -7,9 +7,11 @@ namespace EventManagementWebApp.Services
 {
     public interface IEventService
     {
-        IEnumerable<Event> GetEventsForDisplay(string name, string location, DateTime? date);
+        IEnumerable<Event> GetEventsForDisplay(string name, string location, DateTime? date, int pageNumber, int pageSize);
 
         IEnumerable<Event> GetEvents(int numberOfEvents);
+
+        int GetTotalEvents();
 
         Task CreateEventAsync(EventViewModel model);
 

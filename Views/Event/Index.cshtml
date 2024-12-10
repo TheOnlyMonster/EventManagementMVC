@@ -12,8 +12,9 @@
 }
 
 <main class="container mt-4" style="margin: 120px auto; margin-top: 120px !important;">
-    <partial name="_EventsTable" model="Model.EventsTable" />
+    <partial name="_EventsTable" model="Model" />
 </main>
+
 @if (isMember || (!isAdmin && !isOrganizer))
 {
     <div class="bg-light">

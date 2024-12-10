@@ -6,6 +6,12 @@ namespace EventManagementWebApp.ViewModels
     {
         public IEnumerable<Event> SliderEvents { get; set; }
         public IEnumerable<Event> EventsTable { get; set; }
+
+        public int TotalEvents { get; set; }
+
+        public int CurrentPage { get; set; }
+
+        public int PageSize { get; set; }
     }
 
 }

@@ -1,5 +1,6 @@
 ﻿using EventManagementWebApp.Data;
 using EventManagementWebApp.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace EventManagementWebApp.Repositories
 {
@@ -32,9 +33,12 @@ namespace EventManagementWebApp.Repositories
             return Task.FromResult(0);
         }
 
-        public IEnumerable<Event> GetAllEvents(string name = null, string location = null, DateTime? date = null)
+        public IEnumerable<Event> GetAllEvents(string name = null, string location = null, DateTime? date = null, int pageNumber = 1, int pageSize = 5)
         {
-            var query = _context.Events.Where(e => !e.IsDeleted).AsQueryable();
+            var query = _context.Events
+                                .Where(e => !e.IsDeleted)
+                                .Include(e => e.Registrations)  
+                                .AsQueryable();
 
             if (!string.IsNullOrEmpty(name))
             {
@@ -51,8 +55,15 @@ namespace EventManagementWebApp.Repositories
                 query = query.Where(e => e.Date.Date == date.Value.Date);
             }
 
-            return query.ToList();
+            var pagedEvents = query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            return pagedEvents;
         }
+
+
 
         public Event GetEventById(int eventId)
         {
@@ -64,6 +75,9 @@ namespace EventManagementWebApp.Repositories
             return _context.Events.Where(e => !e.IsDeleted).Take(numberOfEvents).ToList();
         }
 
-        
+        public int GetTotalEvents()
+        {
+            return _context.Events.Count(e => !e.IsDeleted);
+        }
     }
 }
